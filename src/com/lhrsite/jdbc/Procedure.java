@@ -174,8 +174,17 @@ public class Procedure {
         //拼接存储过程执行sql
         /* 获取基本sql */
         String baseSql = this.getBaseSql();
-        dataSource = DataSourceUtil.getDataSource();
+        if (dataSource == null){
+            // 如果此时dataSource为null表示开发者使用setDataSource方式
+            // 初始化的dataSource.
+            // 为了兼容之前的版本，使用传参方式初始化所以再次加入判断
+            dataSource = DataSourceUtil.getDataSource();
+            if (dataSource == null){
+                throw new RuntimeException("未初始化DataSource.");
+            }
+        }
         /* 创建CallableStatement对象 */
+
         conn = dataSource.getConnection();
         cstm = conn.prepareCall(baseSql);
         /*
